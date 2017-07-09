@@ -1,5 +1,6 @@
 from django import forms
 
+from blog.models import Comment
 
 '''
 Django Form Classes
@@ -11,3 +12,12 @@ class EmailPostForm(forms.Form):
     email = forms.EmailField()
     to = forms.EmailField()
     comments = forms.CharField(required=False, widget=forms.Textarea)
+
+
+'''
+By default django builds a form from the fields
+'''
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ('name', 'email', 'body')
