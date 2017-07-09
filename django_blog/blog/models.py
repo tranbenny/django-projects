@@ -6,6 +6,7 @@ from django.db import models
 # custom Post Manager class
 # Model Managers allow you to filter on specific values in a queryset
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
@@ -17,6 +18,9 @@ class PublishedManager(models.Manager):
 class Post(models.Model):
     objects = models.Manager() # default manager
     published = PublishedManager() # custom manager
+
+    # add tagging feature
+    tags = TaggableManager()
 
     STATUS_CHOICES = (
         ('draft', 'Draft'),

@@ -4,32 +4,40 @@ from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.views.generic import ListView
+from taggit.models import Tag
 
 from blog.forms import EmailPostForm, CommentForm
 from blog.models import Post
 
 # PREVIOUS VERSION OF POST LIST REQUEST HANDLER
-# def post_list(request):
-#     object_list = Post.published.all()
-#     # set up pagination for all objects returned
-#     # 3 posts per page
-#     paginator = Paginator(object_list, 3)
-#     # gets the current page number
-#     page = request.GET.get('page')
-#     try:
-#         posts = paginator.page(page)
-#     except PageNotAnInteger:
-#         posts=paginator.page(1)
-#     except EmptyPage:
-#         posts = paginator.page(paginator.num_pages)
-#
-#     # posts = Post.published.all()
-#     # render function renders the list of posts into the given template
-#     # render function returns an HttpResponse object with the rendered text
-#     return render(request,
-#                   'blog/post/list.html',
-#                   { 'page': page,
-#                       'posts': posts})
+def post_list(request, tag_slug=None):
+    object_list = Post.published.all()
+    tag = None
+
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        object_list = object_list.filter(tags__in=[tag])
+
+    # set up pagination for all objects returned
+    # 3 posts per page
+    paginator = Paginator(object_list, 3)
+    # gets the current page number
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts=paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
+    # posts = Post.published.all()
+    # render function renders the list of posts into the given template
+    # render function returns an HttpResponse object with the rendered text
+    return render(request,
+                  'blog/post/list.html',
+                  { 'page': page,
+                    'posts': posts,
+                    'tag': tag })
 
 # POST LIST REQUEST HANDLER, CLASS VERSION
 class PostListView(ListView):
